@@ -54,3 +54,5 @@ $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
 $route['indexnew'] = "welcome/METHOD";
+$route['viewLoginPage'] = "Login/Login_Controller/viewLoginPage";
+$route['logout']        = "Login/Login_Controller/logout";
