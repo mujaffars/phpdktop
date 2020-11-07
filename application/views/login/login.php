@@ -28,6 +28,16 @@
     <div class="login-box">
       <div class="login-logo">
        <b>Gold Billing </b>
+	   
+	   <?php
+	   
+	   echo '<pre>';
+print_r($_ENV);
+echo '</pre>';
+$output = shell_exec("echo | {$_ENV['SystemRoot']}\System32\wbem\wmic.exe path win32_computersystemproduct get uuid");
+if ($output) echo "Command succeeded. Output=".$output;
+else echo "Command failed.";
+?>
       </div><!-- /.login-logo -->
       <div class="login-box-body">
         <p class="login-box-msg">Sign in to start your session</p>

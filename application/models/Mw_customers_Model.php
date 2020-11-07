@@ -1,7 +1,7 @@
 <?php
 
 ////nayan Sanadi developer start Working on time table model
-class Customers_Model extends CI_Model {
+class Mw_customers_Model extends CI_Model {
 
     function __construct() {
         parent::__construct();
@@ -9,72 +9,52 @@ class Customers_Model extends CI_Model {
 //        $this->UserId = $userData->UserId;
     }
 
-    public function createCustomer() {
+    public function createCustomer($custData) {
 
-        $data = $this->encdec->loadjson();
+        $result_array = array(
+            "id" => $custData['id'],
+            "user_id" => $custData['user_id'],
+            "first_name" => $custData['first_name'],
+            "last_name" => $custData['last_name'],
+            "vehicle_no" => $custData['vehicle_no'],
+            "mobile_no" => $custData['mobile_no']
+        );
 
-        $custData = $this->getCustomer(array('vehicle_no' => $data->vehicle_no));
+        $flag = 1;
+        $message = "Error While Create Customer";
 
-        $custValid = $this->validateCreateCust($data);
-
-        if ($custValid['datavalid']) {
-            if (!$custData) {
-                $result_array = array(
-                    "user_id" => $this->UserId,
-                    "first_name" => $data->firstname,
-                    "last_name" => $data->lastname,
-                    "vehicle_no" => $data->vehicle_no,
-                    "mobile_no" => $data->mobile_no
-                );
-
-                $flag = 1;
-                $message = "Error While Create Customer";
-
-                $this->db->trans_start();
-                if ($this->db->insert("mw_customers", $result_array)) {
-                    $flag = 0;
-                    $message = "Customer created successfully";
-                }
-
-                if ($this->db->trans_status() == FALSE) {
-                    $this->db->trans_rollback();
-                    $resultdata['code'] = 1;
-                    $resultdata['result'] = 'Error while Creating customer';
-                } else {
-                    $this->db->trans_commit();
-                    $resultdata['code'] = $flag;
-                    $resultdata['result'] = $message;
-                }
-            } else {
-                $resultdata['code'] = 1;
-                $resultdata['result'] = "Customer already exit!!!";
-            }
-        } else {
-            $resultdata['code'] = 1;
-            $resultdata['result'] = implode("<br/>", $custValid['errors']);
+        $this->db->trans_start();
+        if ($this->db->insert("mw_customers", $result_array)) {
+            $flag = 0;
+            $message = "Customer created successfully";
         }
+
+        if ($this->db->trans_status() == FALSE) {
+            $this->db->trans_rollback();
+            $resultdata['code'] = 1;
+            $resultdata['result'] = 'Error while Creating customer';
+        } else {
+            $this->db->trans_commit();
+            $resultdata['code'] = $flag;
+            $resultdata['result'] = $message;
+        }
+
         return $resultdata;
     }
 
     public function listCustomer() {
 
-        $data = $this->encdec->loadjson();
-
         $this->db->trans_start();
 
-        $flag = 1;
-        $message = "Error While Create Customer";
-
-        $this->db->select('*, cm.id As cust_id, max(invdate) As maxinvdate');
+        $this->db->select('*');
         $this->db->from('mw_customers as cm');
-        $this->db->join('mw_service as ms', 'cm.id = ms.c_id', 'left');
-        $this->db->where('cm.user_id = ' . $this->UserId);
-        $this->db->where('cm.is_active', '1');
-        $this->db->order_by('cm.id DESC');
-        $this->db->group_by('cm.id');
+//        $this->db->join('mw_service as ms', 'cm.id = ms.c_id', 'left');
+//        $this->db->where('cm.is_active', '1');
+//        $this->db->order_by('cm.id DESC');
+//        $this->db->group_by('cm.id');
 
 //        $this->db->get()->result();
-//        echo $this->db->last_query();exit;
+        
         return $this->db->get()->result();
     }
 
@@ -139,7 +119,7 @@ class Customers_Model extends CI_Model {
 
         $resultdata['code'] = 0;
         $resultdata['result'][] = 'Customer deleted successfully';
-        
+
         return $resultdata;
     }
 
